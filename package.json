@@ -11,7 +11,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "tauri": "tauri",
     "generate:tauri": "tauri-ts-generator generate",
-    "postinstall": "cargo install tauri-ts-generator && pnpm run generate:tauri",
+    "postinstall": "cargo install --git https://github.com/lukas-runge/tauri-codegen --branch feat/channel-support tauri-ts-generator && pnpm run generate:tauri",
     "predev": "pnpm run generate:tauri",
     "prebuild": "pnpm run generate:tauri",
     "precheck": "pnpm run generate:tauri",
