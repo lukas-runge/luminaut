@@ -77,6 +77,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Ad-hoc sign macOS builds so Apple Silicon will run them without a paid certificate
+          APPLE_SIGNING_IDENTITY: ${{ startsWith(matrix.runner, 'macos') && '-' || '' }}
         with:
           tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
           releaseName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
