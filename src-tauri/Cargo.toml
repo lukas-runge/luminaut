@@ -1,6 +1,6 @@
 [package]
-name = "tauri-svelte-template"
-version = "0.1.0"
+name = "luminaut"
+version = "0.1.2"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
@@ -26,4 +26,3 @@ chrono = "0.4.44"
 sacn = "0.11.1"
 artnet_protocol = "0.4.4"
 if-addrs = "0.13"
-

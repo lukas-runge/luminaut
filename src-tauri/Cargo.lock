@@ -1977,6 +1977,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
+name = "luminaut"
+version = "0.1.2"
+dependencies = [
+ "artnet_protocol",
+ "chrono",
+ "if-addrs",
+ "sacn",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+]
+
+[[package]]
 name = "markup5ever"
 version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3540,21 +3555,6 @@ dependencies = [
  "webview2-com",
  "windows",
  "wry",
-]
-
-[[package]]
-name = "tauri-svelte-template"
-version = "0.1.0"
-dependencies = [
- "artnet_protocol",
- "chrono",
- "if-addrs",
- "sacn",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
 ]
 
 [[package]]
