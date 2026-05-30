@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Remove native number-input spinners */
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Remove daisyUI btn depth/height effect from spinner buttons */
+.join .btn {
+  box-shadow: none !important;
+  background-image: none !important;
+  --btn-shadow: 0 !important;
+}
+
+/* Strip all borders and focus rings from spinner inputs */
+.join input[type=number] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.join input[type=number]:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
