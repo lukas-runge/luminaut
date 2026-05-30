@@ -22,4 +22,7 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+chrono = "0.4.44"
+sacn = "0.11.1"
+artnet_protocol = "0.4.4"
 
