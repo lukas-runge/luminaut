@@ -2,6 +2,8 @@
 
 A lightweight, cross-platform DMX monitor for **sACN (E1.31)** and **Art-Net** packets. Built with Tauri and Svelte, it lets you inspect any universe in real time — channel values, levels, and priority — without needing dedicated hardware.
 
+![](./app.png)
+
 ---
 
 ## Features
