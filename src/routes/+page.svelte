@@ -28,6 +28,8 @@
   let listening = $state(false);
   let dmxData = $state<dmxListenerChannelType | null>(null);
   let errorMsg = $state<string | null>(null);
+  // sACN sender to display; null shows the merged output
+  let selectedCid = $state<string | null>(null);
 
   const CHANNEL_COUNT = 512;
 
@@ -39,8 +41,14 @@
     protocol === "sacn" ? sacnUniverse : artnetPortAddress
   );
 
+  const sources = $derived(dmxData?.sources ?? []);
+  const selectedSource = $derived(
+    selectedCid === null ? undefined : sources.find((s) => s.cid === selectedCid)
+  );
+  const hasData = $derived(dmxData !== null && (protocol !== "sacn" || sources.length > 0));
+
   const channels = $derived(
-    dmxData ? dmxData.values.slice(0, CHANNEL_COUNT) : new Array(CHANNEL_COUNT).fill(0)
+    (selectedSource?.values ?? dmxData?.values ?? new Array(CHANNEL_COUNT).fill(0)).slice(0, CHANNEL_COUNT)
   );
 
   onMount(async () => {
@@ -62,6 +70,7 @@
   async function doStop() {
     listening = false;
     dmxData = null;
+    selectedCid = null;
     try { await stopListener(); } catch { /* ignore when not in Tauri */ }
   }
 
@@ -282,6 +291,58 @@
       </div>
     {/if}
 
+    <!-- ── sACN senders ────────────────────────────────────────────────────────── -->
+    {#if listening && protocol === "sacn" && sources.length > 0}
+      <div class="card bg-base-100 shadow">
+        <div class="card-body p-0">
+          <table class="table table-sm">
+            <thead>
+              <tr class="text-xs text-base-content/50 uppercase tracking-wider">
+                <th>Sender</th>
+                <th>IP</th>
+                <th class="text-right">Priority</th>
+                <th class="text-right">Rate</th>
+                <th>CID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="cursor-pointer hover:bg-base-200 {selectedCid === null ? 'bg-primary/15' : ''}"
+                onclick={() => (selectedCid = null)}
+              >
+                <td class="font-semibold">Merged output</td>
+                <td></td>
+                <td class="text-right font-mono">{dmxData?.priority}</td>
+                <td></td>
+                <td class="text-xs text-base-content/40">highest priority wins, ties HTP</td>
+              </tr>
+              {#each sources as source (source.cid)}
+                <tr
+                  class="cursor-pointer hover:bg-base-200 {selectedCid === source.cid ? 'bg-primary/15' : ''}
+                    {source.winning ? '' : 'text-base-content/50'}"
+                  onclick={() => (selectedCid = source.cid)}
+                >
+                  <td>
+                    <span class="font-medium">{source.name || "(unnamed)"}</span>
+                    {#if source.winning}
+                      <span class="badge badge-success badge-xs ml-1">active</span>
+                    {/if}
+                    {#if source.perAddressPriority}
+                      <span class="badge badge-ghost badge-xs ml-1" title="Sends 0xDD per-address priority">0xDD</span>
+                    {/if}
+                  </td>
+                  <td class="font-mono text-xs">{source.ip}</td>
+                  <td class="text-right font-mono">{source.priority}</td>
+                  <td class="text-right font-mono text-xs">{source.rate}&nbsp;/s</td>
+                  <td class="font-mono text-xs text-base-content/40">{source.cid}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {/if}
+
     <!-- ── Universe panel ─────────────────────────────────────────────────────── -->
     <div class="card bg-base-100 shadow">
       <div class="card-body p-4 gap-3">
@@ -298,8 +359,16 @@
               </span>
             {/if}
           </h2>
-          {#if dmxData && protocol === "sacn"}
-            <span class="text-xs text-base-content/40 font-mono ml-auto">priority {dmxData.priority}</span>
+          {#if hasData && protocol === "sacn"}
+            <span class="text-xs text-base-content/40 font-mono ml-auto">
+              {#if selectedCid === null}
+                merged · priority {dmxData?.priority}
+              {:else if selectedSource}
+                {selectedSource.name || "(unnamed)"} · priority {selectedSource.priority}
+              {:else}
+                <span class="text-warning">selected sender offline</span> · showing merged
+              {/if}
+            </span>
           {/if}
         </div>
 
@@ -311,7 +380,7 @@
             </svg>
             <span class="text-sm">Press Listen to start monitoring</span>
           </div>
-        {:else if !dmxData}
+        {:else if !hasData}
           <div class="flex flex-col items-center justify-center py-16 gap-3 text-base-content/30">
             <span class="loading loading-dots loading-md"></span>
             <span class="text-sm">
